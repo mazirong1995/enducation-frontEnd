@@ -51,3 +51,11 @@ export function delStu(id) {
     method: 'delete'
   })
 }
+
+//课程教师接口
+export function pullDownStu() {
+  return request({
+    url: '/system/stu/pullDown',
+    method: 'get',
+  })
+}

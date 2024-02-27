@@ -1,13 +1,16 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="学生id" prop="stuId">
-        <el-input
+
+      <el-form-item label="学生" prop="stuId">
+        <el-select
           v-model="queryParams.stuId"
-          placeholder="请输入学生id"
+          placeholder="请选择学生"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in stuIds" :key="item.stuId" :value="item.stuId" :label="item.userName"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -15,74 +18,11 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:stu:edit']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:stu:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:stu:edit']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:stu:query']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
 
     <el-table v-loading="loading" :data="stuList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="学生id" align="center" prop="stuId" />
-      <el-table-column label="课程数组" align="center" prop="ccIds" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:stu:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:stu:edit']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column label="学生" align="center" prop="stuIdName" />
+      <el-table-column label="课程" align="center" prop="ccIdsName" />
     </el-table>
 
     <pagination
@@ -112,7 +52,7 @@
 </template>
 
 <script>
-import { listStu, getStu, delStu, addStu, updateStu } from "@/api/system/stu";
+import { listStu, getStu, delStu, addStu, updateStu,pullDownStu} from "@/api/system/stu";
 
 export default {
   name: "Stu",
@@ -147,13 +87,21 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      stuIds:[]
     };
   },
   created() {
     this.getList();
+    this.getDict()
   },
   methods: {
+    getDict(){
+      pullDownStu().then(res=>{
+        console.log(res)
+        this.stuIds=res.data //自己赋值
+      })
+    },
     /** 查询学生选课列表 */
     getList() {
       this.loading = true;
