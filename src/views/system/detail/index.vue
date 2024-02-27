@@ -50,16 +50,6 @@
           v-hasPermi="['system:detail:edit']"
         >删除</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:detail:query']"
-        >导出</el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -102,7 +92,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="课程" prop="ccId">
           <el-select
-            v-model="form.ccName"
+            v-model="form.ccId"
             placeholder="请选择课程"
             clearable
             @keyup.enter.native="handleQuery"

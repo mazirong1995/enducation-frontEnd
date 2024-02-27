@@ -26,6 +26,15 @@ export function addStu(data) {
   })
 }
 
+// 新增学生选课
+export function addStu1(data) {
+  return request({
+    url: '/system/stu/add1',
+    method: 'post',
+    data: data
+  })
+}
+
 // 修改学生选课
 export function updateStu(data) {
   return request({

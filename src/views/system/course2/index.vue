@@ -1,13 +1,15 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="课程名称" prop="ccName">
-        <el-input
-          v-model="queryParams.ccName"
+      <el-form-item label="课程名称" prop="ccId">
+        <el-select
+          v-model="queryParams.ccId"
           placeholder="请输入课程名称"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in courses" :key="item.ccId" :value="item.ccId" :label="item.ccName"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="课程教师" prop="ccTeacher">
         <el-select
@@ -16,7 +18,7 @@
           clearable
           @keyup.enter.native="handleQuery"
         >
-          <el-option v-for="item in teachers" :key="item.userId" :value="item.userId" :label="item.userName"></el-option>
+          <el-option v-for="item in teachers" :key="item.ccTeacher" :value="item.ccTeacher" :label="item.userName"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -26,48 +28,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:course:edit']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:course:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:course:edit']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:course:query']"
-        >导出</el-button>
-      </el-col>
       <el-col :span="1.5">
         <el-button
           type="success"
@@ -83,7 +43,7 @@
     <el-table v-loading="loading" :data="courseList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="课程名称" align="center" prop="ccName" />
-      <el-table-column label="课程教师id" align="center" prop="ccTeacher" />
+      <el-table-column label="课程教师id" align="center" prop="ccTeacherName" />
       <el-table-column label="课程时长" align="center" prop="ccDuration" />
       <el-table-column label="课程开始时间" align="center" prop="ccStartTime" />
       <el-table-column label="课程结束时间" align="center" prop="ccEndTime" />
@@ -112,7 +72,7 @@
             clearable
             @keyup.enter.native="handleQuery"
           >
-            <el-option v-for="item in teachers" :key="item.userId" :value="item.userId" :label="item.userName"></el-option>
+            <el-option v-for="item in teachers" :key="item.ccTeacher" :value="item.ccTeacher" :label="item.userName"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="课程时长" prop="ccDuration">
@@ -140,7 +100,9 @@
 </template>
 
 <script>
-import { listCourse1, getCourse, delCourse, addCourse1, updateCourse ,pullDownTeacher} from "@/api/system/course";
+import { listCourse2, getCourse, delCourse, addCourse1, updateCourse ,pullDownTeacher} from "@/api/system/course";
+import { pullDownCourse2} from "@/api/system/detail";
+import { addStu1 } from "@/api/system/stu";
 
 export default {
   name: "Course",
@@ -176,23 +138,30 @@ export default {
         ccEndTime: null,
         ccCheckTime: null,
         ccFlag: null,
-        ccRemark: null
+        ccRemark: null,
+        ccIds: []
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
       },
-      teachers:[]
+      teachers:[],
+      courses:[]
     };
   },
   created() {
     this.getList();
-    this.getDict()
+    this.getDict();
+    this.getDict2()
   },
   methods: {
     saveFn(){
-      //this.ids; 选中的id 多个
+      this.queryParams.ccIds = this.ids;
+      addStu1(this.queryParams).then(response => {
+        this.$modal.msgSuccess("新增成功");
+      });
+      //console.log(this.ids); //选中的id 多个
     },
     getDict(){
       pullDownTeacher().then(res=>{
@@ -200,10 +169,16 @@ export default {
         this.teachers=res.data //自己赋值
       })
     },
+    getDict2(){
+      pullDownCourse2().then(res=>{
+        console.log(res)
+        this.courses=res.data //自己赋值
+      })
+    },
     /** 查询课程列表 */
     getList() {
       this.loading = true;
-      listCourse1(this.queryParams).then(response => {
+      listCourse2(this.queryParams).then(response => {
         this.courseList = response.rows;
         this.total = response.total;
         this.loading = false;

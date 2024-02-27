@@ -1,65 +1,21 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="课程id" prop="ccId">
-        <el-input
+      <el-form-item label="课程" prop="ccId">
+        <el-select
           v-model="queryParams.ccId"
-          placeholder="请输入课程id"
+          placeholder="请选择课程"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in courses" :key="item.ccId" :value="item.ccId" :label="item.ccName"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:detail:edit']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:detail:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:detail:edit']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:detail:query']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
 
     <el-table v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
@@ -120,7 +76,7 @@
 </template>
 
 <script>
-import { listDetail1, getDetail, delDetail, addDetail, updateDetail } from "@/api/system/detail";
+import { listDetail2, getDetail, delDetail, addDetail, updateDetail,pullDownCourse2} from "@/api/system/detail";
 
 export default {
   name: "Detail",
@@ -157,17 +113,25 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      courses: []
     };
   },
   created() {
     this.getList();
+    this.getDict()
   },
   methods: {
+    getDict(){
+      pullDownCourse2().then(res=>{
+        console.log(res)
+        this.courses=res.data //自己赋值
+      })
+    },
     /** 查询课程详情列表 */
     getList() {
       this.loading = true;
-      listDetail1(this.queryParams).then(response => {
+      listDetail2(this.queryParams).then(response => {
         this.detailList = response.rows;
         this.total = response.total;
         this.loading = false;

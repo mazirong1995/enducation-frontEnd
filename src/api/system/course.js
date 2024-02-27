@@ -18,6 +18,15 @@ export function listCourse1(query) {
   })
 }
 
+// 查询全部课程列表
+export function listCourse2(query) {
+  return request({
+    url: '/system/course/list2',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询课程详细
 export function getCourse(id) {
   return request({
