@@ -16,7 +16,7 @@
           clearable
           @keyup.enter.native="handleQuery"
         >
-          <el-option v-for="item in teachers" :key="item.id" :value="item.value" :label="item.label"></el-option>
+          <el-option v-for="item in teachers" :key="item.userId" :value="item.userName" :label="item.userName"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -197,8 +197,8 @@ export default {
   methods: {
     getDict(){
       pullDownTeacher().then(res=>{
-        console.log(res)
-        this.teachers=[]//自己赋值
+        console.log(res.data)
+        this.teachers=[res.data]//自己赋值
       })
     },
     /** 查询课程列表 */
