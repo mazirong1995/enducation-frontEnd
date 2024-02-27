@@ -63,7 +63,7 @@
 
     <el-table v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="课程id" align="center" prop="ccId" />
+      <el-table-column label="课程名称" align="center" prop="ccName" />
       <el-table-column label="课程明细名称" align="center" prop="ccdName" />
       <el-table-column label="课程视频地址" align="center" prop="ccdDataPath" />
       <el-table-column label="课程备注" align="center" prop="ccdRemark" />

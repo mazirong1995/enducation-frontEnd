@@ -17,30 +17,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="考评教师id" prop="teaId">
-        <el-input
-          v-model="queryParams.teaId"
-          placeholder="请输入考评教师id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="成绩" prop="anGrade">
-        <el-input
-          v-model="queryParams.anGrade"
-          placeholder="请输入成绩"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="anRemark">
-        <el-input
-          v-model="queryParams.anRemark"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -48,16 +24,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:answer:edit']"
-        >新增</el-button>
-      </el-col>
       <el-col :span="1.5">
         <el-button
           type="success"
@@ -68,27 +34,6 @@
           @click="handleUpdate"
           v-hasPermi="['system:answer:edit']"
         >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:answer:edit']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:answer:query']"
-        >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -132,11 +77,11 @@
     <!-- 添加或修改课程考试答案库对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="课程id" prop="ccId">
+          <el-input v-model="form.stuId" placeholder="请输入课程id" />
+        </el-form-item>
         <el-form-item label="学生id" prop="stuId">
           <el-input v-model="form.stuId" placeholder="请输入学生id" />
-        </el-form-item>
-        <el-form-item label="考评教师id" prop="teaId">
-          <el-input v-model="form.teaId" placeholder="请输入考评教师id" />
         </el-form-item>
         <el-form-item label="课程考试答案图片地址数组" prop="anPath">
           <el-input v-model="form.anPath" type="textarea" placeholder="请输入内容" />

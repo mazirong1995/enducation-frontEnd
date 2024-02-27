@@ -9,6 +9,15 @@ export function listDetail(query) {
   })
 }
 
+// 查询课程详情列表
+export function listDetail1(query) {
+  return request({
+    url: '/system/detail/list1',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询课程详情详细
 export function getDetail(id) {
   return request({

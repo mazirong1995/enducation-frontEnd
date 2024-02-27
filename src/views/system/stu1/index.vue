@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="课程id" prop="ccId">
+      <el-form-item label="学生id" prop="stuId">
         <el-input
-          v-model="queryParams.ccId"
-          placeholder="请输入课程id"
+          v-model="queryParams.stuId"
+          placeholder="请输入学生id"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -23,7 +23,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:examination:edit']"
+          v-hasPermi="['system:stu:edit']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -34,7 +34,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:examination:edit']"
+          v-hasPermi="['system:stu:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -45,17 +45,26 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:examination:edit']"
+          v-hasPermi="['system:stu:edit']"
         >删除</el-button>
       </el-col>
-
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="handleExport"
+          v-hasPermi="['system:stu:query']"
+        >导出</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="examinationList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="stuList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="课程id" align="center" prop="ccId" />
-      <el-table-column label="课程考试图片地址数组" align="center" prop="ccExaminationPath" />
+      <el-table-column label="学生id" align="center" prop="stuId" />
+      <el-table-column label="课程数组" align="center" prop="ccIds" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -63,15 +72,15 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:examination:edit']"
-          >上传</el-button>
+            v-hasPermi="['system:stu:edit']"
+          >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:examination:edit']"
-          >下载</el-button>
+            v-hasPermi="['system:stu:edit']"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -84,14 +93,14 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改课程考试题库对话框 -->
+    <!-- 添加或修改学生选课对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="课程id" prop="ccId">
-          <el-input v-model="form.ccId" placeholder="请输入课程id" />
+        <el-form-item label="学生id" prop="stuId">
+          <el-input v-model="form.stuId" placeholder="请输入学生id" />
         </el-form-item>
-        <el-form-item label="课程考试图片地址数组" prop="ccExaminationPath">
-          <el-input v-model="form.ccExaminationPath" type="textarea" placeholder="请输入内容" />
+        <el-form-item label="课程数组" prop="ccIds">
+          <el-input v-model="form.ccIds" type="textarea" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -103,10 +112,10 @@
 </template>
 
 <script>
-import { listExamination, getExamination, delExamination, addExamination, updateExamination } from "@/api/system/examination";
+import { listStu, getStu, delStu, addStu, updateStu } from "@/api/system/stu";
 
 export default {
-  name: "Examination",
+  name: "Stu",
   data() {
     return {
       // 遮罩层
@@ -121,8 +130,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 课程考试题库表格数据
-      examinationList: [],
+      // 学生选课表格数据
+      stuList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -131,8 +140,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        ccId: null,
-        ccExaminationPath: null
+        stuId: null,
+        ccIds: null
       },
       // 表单参数
       form: {},
@@ -145,11 +154,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询课程考试题库列表 */
+    /** 查询学生选课列表 */
     getList() {
       this.loading = true;
-      listExamination(this.queryParams).then(response => {
-        this.examinationList = response.rows;
+      listStu(this.queryParams).then(response => {
+        this.stuList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -163,8 +172,8 @@ export default {
     reset() {
       this.form = {
         id: null,
-        ccId: null,
-        ccExaminationPath: null
+        stuId: null,
+        ccIds: null
       };
       this.resetForm("form");
     },
@@ -188,16 +197,16 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加课程考试题库";
+      this.title = "添加学生选课";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getExamination(id).then(response => {
+      getStu(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改课程考试题库";
+        this.title = "修改学生选课";
       });
     },
     /** 提交按钮 */
@@ -205,13 +214,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateExamination(this.form).then(response => {
+            updateStu(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addExamination(this.form).then(response => {
+            addStu(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -223,8 +232,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除课程考试题库编号为"' + ids + '"的数据项？').then(function() {
-        return delExamination(ids);
+      this.$modal.confirm('是否确认删除学生选课编号为"' + ids + '"的数据项？').then(function() {
+        return delStu(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -232,9 +241,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/examination/export', {
+      this.download('system/stu/export', {
         ...this.queryParams
-      }, `examination_${new Date().getTime()}.xlsx`)
+      }, `stu_${new Date().getTime()}.xlsx`)
     }
   }
 };
