@@ -4,7 +4,7 @@
       <!--管理员数据-->
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-          <el-form-item label="管理员名称" prop="userName">
+          <el-form-item label="名称" prop="userName" >
             <el-input
               v-model="queryParams.userName"
               placeholder="请输入管理员名称"

@@ -268,7 +268,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
+              <el-select v-model="form.roleIds" multiple placeholder="请选择角色" disable>
                 <el-option
                   v-for="item in roleOptions"
                   :key="item.roleId"
@@ -369,7 +369,9 @@ export default {
       // 角色选项
       roleOptions: [],
       // 表单参数
-      form: {},
+      form: {
+        roleIds: [101]
+      },
       defaultProps: {
         children: "children",
         label: "label"
@@ -508,7 +510,7 @@ export default {
         status: "0",
         remark: undefined,
         postIds: [],
-        roleIds: []
+        roleIds: [101]
       };
       this.resetForm("form");
     },
