@@ -1,14 +1,17 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="课程id" prop="ccId">
-        <el-input
+      <el-form-item label="课程" prop="ccId">
+        <el-select
           v-model="queryParams.ccId"
-          placeholder="请输入课程id"
+          placeholder="请选择课程"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in courses" :key="item.ccId" :value="item.ccId" :label="item.ccName"></el-option>
+        </el-select>
       </el-form-item>
+
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -17,17 +20,16 @@
 
     <el-table v-loading="loading" :data="examinationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="课程id" align="center" prop="ccId" />
+      <el-table-column label="课程" align="center" prop="ccName" />
       <el-table-column label="课程考试图片地址数组" align="center" prop="ccExaminationPath" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
+            icon="el-icon-edit"
             v-hasPermi="['system:examination:edit']"
-          >删除</el-button>
+          >下载</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -40,26 +42,12 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改课程考试题库对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="课程id" prop="ccId">
-          <el-input v-model="form.ccId" placeholder="请输入课程id" />
-        </el-form-item>
-        <el-form-item label="课程考试图片地址数组" prop="ccExaminationPath">
-          <el-input v-model="form.ccExaminationPath" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import { listExamination, getExamination, delExamination, addExamination, updateExamination } from "@/api/system/examination";
+import { listDetail2, getDetail, delDetail, addDetail, updateDetail,pullDownCourse2} from "@/api/system/detail";
 
 export default {
   name: "Examination",
@@ -94,13 +82,21 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      courses: []
     };
   },
   created() {
     this.getList();
+    this.getDict()
   },
   methods: {
+    getDict(){
+      pullDownCourse2().then(res=>{
+        console.log(res)
+        this.courses=res.data //自己赋值
+      })
+    },
     /** 查询课程考试题库列表 */
     getList() {
       this.loading = true;

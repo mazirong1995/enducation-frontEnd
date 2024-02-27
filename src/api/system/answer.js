@@ -26,6 +26,15 @@ export function addAnswer(data) {
   })
 }
 
+// 新增课程考试答案库
+export function addAnswer1(data) {
+  return request({
+    url: '/system/answer/stuAnswer',
+    method: 'post',
+    data: data
+  })
+}
+
 // 修改课程考试答案库
 export function updateAnswer(data) {
   return request({

@@ -2,17 +2,22 @@
   <div class="app-container">
 
     <el-form ref="form" :model="form" :rules="rules" label-width="140px">
-      <el-form-item label="课程id" prop="ccId">
-        <el-input v-model="form.stuId" placeholder="请输入课程id" />
+      <el-form-item label="课程" prop="ccId">
+        <el-select
+          v-model="form.ccId"
+          placeholder="请选择课程"
+          clearable
+          @keyup.enter.native="handleQuery"
+        >
+          <el-option v-for="item in courses" :key="item.ccId" :value="item.ccId" :label="item.ccName"></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="学生id" prop="stuId">
-        <el-input v-model="form.stuId" placeholder="请输入学生id" />
-      </el-form-item>
+
       <el-form-item label="课程考试答案图片地址数组" prop="anPath">
         <el-input v-model="form.anPath" type="textarea" placeholder="请输入内容" />
       </el-form-item>
       <div style="text-align: center">
-        <el-button type="primary" @click="handleAdd">新增</el-button>
+        <el-button type="primary" @click="submitForm">新增</el-button>
       </div>
 
     </el-form>
@@ -22,7 +27,8 @@
 </template>
 
 <script>
-import { listAnswer, getAnswer, delAnswer, addAnswer, updateAnswer } from "@/api/system/answer";
+import { listAnswer, getAnswer, delAnswer, addAnswer1, updateAnswer } from "@/api/system/answer";
+import { pullDownCourse2} from "@/api/system/detail";
 
 export default {
   name: "Answer",
@@ -61,13 +67,21 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      courses: []
     };
   },
   created() {
     this.getList();
+    this.getDict()
   },
   methods: {
+    getDict(){
+      pullDownCourse2().then(res=>{
+        console.log(res)
+        this.courses=res.data //自己赋值
+      })
+    },
     /** 查询课程考试答案库列表 */
     getList() {
       this.loading = true;
@@ -138,7 +152,7 @@ export default {
               this.getList();
             });
           } else {
-            addAnswer(this.form).then(response => {
+            addAnswer1(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();

@@ -1,21 +1,27 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="课程id" prop="ccId">
-        <el-input
+
+      <el-form-item label="课程" prop="ccId">
+        <el-select
           v-model="queryParams.ccId"
-          placeholder="请输入课程id"
+          placeholder="请选择课程"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in courses" :key="item.ccId" :value="item.ccId" :label="item.ccName"></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="学生id" prop="stuId">
-        <el-input
+
+      <el-form-item label="学生" prop="stuId">
+        <el-select
           v-model="queryParams.stuId"
-          placeholder="请输入学生id"
+          placeholder="请选择学生"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in stuIds" :key="item.stuId" :value="item.stuId" :label="item.userName"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -103,6 +109,8 @@
 
 <script>
 import { listAnswer, getAnswer, delAnswer, addAnswer, updateAnswer } from "@/api/system/answer";
+import { listDetail2, getDetail, delDetail, addDetail, updateDetail,pullDownCourse2} from "@/api/system/detail";
+import { listStu, getStu, delStu, addStu, updateStu,pullDownStu} from "@/api/system/stu";
 
 export default {
   name: "Answer",
@@ -141,13 +149,29 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      courses: [],
+      stuIds:[]
     };
   },
   created() {
     this.getList();
+    this.getDict();
+    this.getDict1()
   },
   methods: {
+    getDict(){
+      pullDownCourse2().then(res=>{
+        console.log(res)
+        this.courses=res.data //自己赋值
+      })
+    },
+    getDict1(){
+      pullDownStu().then(res=>{
+        console.log(res)
+        this.stuIds=res.data //自己赋值
+      })
+    },
     /** 查询课程考试答案库列表 */
     getList() {
       this.loading = true;
