@@ -51,3 +51,19 @@ export function delDetail(id) {
     method: 'delete'
   })
 }
+
+//必修课程接口
+export function pullDownCourse() {
+  return request({
+    url: '/system/detail/pullDownCourse',
+    method: 'get',
+  })
+}
+
+//选修课程接口
+export function pullDownCourse1() {
+  return request({
+    url: '/system/detail/pullDownCourse1',
+    method: 'get',
+  })
+}

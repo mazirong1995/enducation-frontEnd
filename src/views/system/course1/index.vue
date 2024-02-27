@@ -116,7 +116,7 @@
         </el-form-item>
         <el-form-item label="课程教师" prop="ccTeacher">
           <el-select
-            v-model="form.ccTeacherName"
+            v-model="form.ccTeacher"
             placeholder="请输入课程教师"
             clearable
             @keyup.enter.native="handleQuery"

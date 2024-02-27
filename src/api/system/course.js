@@ -62,7 +62,6 @@ export function delCourse(id) {
 }
 
 //课程教师接口
-
 export function pullDownTeacher() {
   return request({
     url: '/system/course/pullDown',

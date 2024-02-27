@@ -1,13 +1,15 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="课程id" prop="ccId">
-        <el-input
+      <el-form-item label="课程" prop="ccId">
+        <el-select
           v-model="queryParams.ccId"
-          placeholder="请输入课程id"
+          placeholder="请选择课程"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in courses" :key="item.ccId" :value="item.ccId" :label="item.ccName"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -98,8 +100,15 @@
     <!-- 添加或修改课程详情对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="课程id" prop="ccId">
-          <el-input v-model="form.ccId" placeholder="请输入课程id" />
+        <el-form-item label="课程" prop="ccId">
+          <el-select
+            v-model="form.ccName"
+            placeholder="请选择课程"
+            clearable
+            @keyup.enter.native="handleQuery"
+          >
+            <el-option v-for="item in courses" :key="item.ccId" :value="item.ccId" :label="item.ccName"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="课程明细名称" prop="ccdName">
           <el-input v-model="form.ccdName" placeholder="请输入课程明细名称" />
@@ -120,7 +129,7 @@
 </template>
 
 <script>
-import { listDetail, getDetail, delDetail, addDetail, updateDetail } from "@/api/system/detail";
+import { listDetail, getDetail, delDetail, addDetail, updateDetail,pullDownCourse } from "@/api/system/detail";
 
 export default {
   name: "Detail",
@@ -149,6 +158,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         ccId: null,
+        ccName: null,
         ccdName: null,
         ccdDataPath: null,
         ccdRemark: null
@@ -157,13 +167,21 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      courses: []
     };
   },
   created() {
     this.getList();
+    this.getDict()
   },
   methods: {
+    getDict(){
+      pullDownCourse().then(res=>{
+        console.log(res)
+        this.courses=res.data //自己赋值
+      })
+    },
     /** 查询课程详情列表 */
     getList() {
       this.loading = true;
