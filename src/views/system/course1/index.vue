@@ -9,13 +9,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="课程教师id" prop="ccTeacher">
-        <el-input
+      <el-form-item label="课程教师" prop="ccTeacher">
+        <el-select
           v-model="queryParams.ccTeacher"
-          placeholder="请输入课程教师id"
+          placeholder="请输入课程教师"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in teachers" :key="item.id" :value="item.value" :label="item.label"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -143,7 +145,7 @@
 </template>
 
 <script>
-import { listCourse1, getCourse, delCourse, addCourse1, updateCourse } from "@/api/system/course";
+import { listCourse1, getCourse, delCourse, addCourse1, updateCourse ,pullDownTeacher} from "@/api/system/course";
 
 export default {
   name: "Course",
@@ -184,13 +186,21 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      teachers:[]
     };
   },
   created() {
     this.getList();
+    this.getDict()
   },
   methods: {
+    getDict(){
+      pullDownTeacher().then(res=>{
+        console.log(res)
+        this.teachers=[]//自己赋值
+      })
+    },
     /** 查询课程列表 */
     getList() {
       this.loading = true;

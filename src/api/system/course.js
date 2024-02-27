@@ -60,3 +60,12 @@ export function delCourse(id) {
     method: 'delete'
   })
 }
+
+//课程教师接口
+
+export function pullDownTeacher() {
+  return request({
+    url: '/system/course/pullDown',
+    method: 'get',
+  })
+}

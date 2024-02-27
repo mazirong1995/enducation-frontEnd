@@ -1,47 +1,23 @@
 <template>
   <div class="app-container">
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:answer:edit']"
-        >新增</el-button>
-      </el-col>
-
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
-
-    <!-- 添加或修改课程考试答案库对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="课程id" prop="ccId">
-          <el-input v-model="form.stuId" placeholder="请输入课程id" />
-        </el-form-item>
-        <el-form-item label="学生id" prop="stuId">
-          <el-input v-model="form.stuId" placeholder="请输入学生id" />
-        </el-form-item>
-        <el-form-item label="课程考试答案图片地址数组" prop="anPath">
-          <el-input v-model="form.anPath" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+    <el-form ref="form" :model="form" :rules="rules" label-width="140px">
+      <el-form-item label="课程id" prop="ccId">
+        <el-input v-model="form.stuId" placeholder="请输入课程id" />
+      </el-form-item>
+      <el-form-item label="学生id" prop="stuId">
+        <el-input v-model="form.stuId" placeholder="请输入学生id" />
+      </el-form-item>
+      <el-form-item label="课程考试答案图片地址数组" prop="anPath">
+        <el-input v-model="form.anPath" type="textarea" placeholder="请输入内容" />
+      </el-form-item>
+      <div style="text-align: center">
+        <el-button type="primary" @click="handleAdd">新增</el-button>
       </div>
-    </el-dialog>
+
+    </el-form>
+
+
   </div>
 </template>
 
@@ -190,3 +166,10 @@ export default {
   }
 };
 </script>
+
+<style scoped lang="scss">
+.app-container{
+  width: 800px;
+  margin: 0 auto;
+}
+</style>

@@ -66,6 +66,15 @@
           v-hasPermi="['system:course:query']"
         >导出</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          size="mini"
+          @click="saveFn"
+          v-hasPermi="['system:course:edit']"
+        >保存</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -173,6 +182,9 @@ export default {
     this.getList();
   },
   methods: {
+    saveFn(){
+      //this.ids; 选中的id 多个
+    },
     /** 查询课程列表 */
     getList() {
       this.loading = true;
