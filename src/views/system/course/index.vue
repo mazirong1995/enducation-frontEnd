@@ -9,29 +9,21 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="课程教师id" prop="ccTeacher">
-        <el-input
+      <el-form-item label="课程教师" prop="ccTeacher">
+        <el-select
           v-model="queryParams.ccTeacher"
-          placeholder="请输入课程教师id"
+          placeholder="请输入课程教师"
           clearable
           @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option v-for="item in teachers" :key="item.userId" :value="item.userId" :label="item.userName"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="课程开始时间" prop="ccStartTime">
-        <el-input
-          v-model="queryParams.ccStartTime"
-          placeholder="请输入课程开始时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-date-picker v-model="queryParams.ccStartTime" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" placeholder="选择日期时间" />
       </el-form-item>
       <el-form-item label="课程结束时间" prop="ccEndTime">
-        <el-input
-          v-model="queryParams.ccEndTime"
-          placeholder="请输入课程结束时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-date-picker v-model="queryParams.ccEndTime" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" placeholder="选择日期时间" />
       </el-form-item>
 
       <el-form-item>
@@ -89,7 +81,7 @@
     <el-table v-loading="loading" :data="courseList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="课程名称" align="center" prop="ccName" />
-      <el-table-column label="课程教师id" align="center" prop="ccTeacher" />
+      <el-table-column label="课程教师" align="center" prop="ccTeacherName" />
       <el-table-column label="课程时长" align="center" prop="ccDuration" />
       <el-table-column label="课程开始时间" align="center" prop="ccStartTime" />
       <el-table-column label="课程结束时间" align="center" prop="ccEndTime" />
@@ -129,20 +121,27 @@
         <el-form-item label="课程名称" prop="ccName">
           <el-input v-model="form.ccName" placeholder="请输入课程名称" />
         </el-form-item>
-        <el-form-item label="课程教师id" prop="ccTeacher">
-          <el-input v-model="form.ccTeacher" placeholder="请输入课程教师id" />
+        <el-form-item label="课程教师" prop="ccTeacher">
+          <el-select
+            v-model="form.ccTeacherName"
+            placeholder="请输入课程教师"
+            clearable
+            @keyup.enter.native="handleQuery"
+          >
+            <el-option v-for="item in teachers" :key="item.userId" :value="item.userId" :label="item.userName"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="课程时长" prop="ccDuration">
           <el-input v-model="form.ccDuration" placeholder="请输入课程时长" />
         </el-form-item>
         <el-form-item label="课程开始时间" prop="ccStartTime">
-          <el-input v-model="form.ccStartTime" placeholder="请输入课程开始时间" />
+          <el-date-picker v-model="form.ccStartTime" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" placeholder="选择日期时间" />
         </el-form-item>
         <el-form-item label="课程结束时间" prop="ccEndTime">
-          <el-input v-model="form.ccEndTime" placeholder="请输入课程结束时间" />
+          <el-date-picker v-model="form.ccEndTime" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" placeholder="选择日期时间" />
         </el-form-item>
         <el-form-item label="课程预计考试时间" prop="ccCheckTime">
-          <el-input v-model="form.ccCheckTime" placeholder="请输入课程预计考试时间" />
+          <el-date-picker v-model="form.ccCheckTime" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" placeholder="选择日期时间" />
         </el-form-item>
         <el-form-item label="备注" prop="ccRemark">
           <el-input v-model="form.ccRemark" placeholder="请输入备注" />
@@ -157,7 +156,7 @@
 </template>
 
 <script>
-import { listCourse, getCourse, delCourse, addCourse, updateCourse } from "@/api/system/course";
+import { listCourse, getCourse, delCourse, addCourse, updateCourse ,pullDownTeacher} from "@/api/system/course";
 
 export default {
   name: "Course",
@@ -187,6 +186,7 @@ export default {
         pageSize: 10,
         ccName: null,
         ccTeacher: null,
+        ccTeacherName : null,
         ccDuration: null,
         ccStartTime: null,
         ccEndTime: null,
@@ -198,13 +198,21 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      teachers:[]
     };
   },
   created() {
     this.getList();
+    this.getDict();
   },
   methods: {
+    getDict(){
+      pullDownTeacher().then(res=>{
+        console.log(res)
+        this.teachers=res.data //自己赋值
+      })
+    },
     /** 查询课程列表 */
     getList() {
       this.loading = true;
