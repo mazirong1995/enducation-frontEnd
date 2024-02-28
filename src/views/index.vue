@@ -25,6 +25,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.app-container{
+  background-color: #409EFF;
+  opacity: .6;
+  color: #fff;
+}
 .home {
   font-size: 50px;
   font-weight: bold;

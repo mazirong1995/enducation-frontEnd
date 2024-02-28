@@ -17,7 +17,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="detailList" row-key="id" :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="课程名称" align="center" prop="ccName" />
       <el-table-column label="课程明细名称" align="center" prop="ccdName" />
