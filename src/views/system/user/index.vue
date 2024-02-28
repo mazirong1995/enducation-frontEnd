@@ -585,7 +585,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.userId || this.ids;
-      this.$modal.confirm('是否确认删除管理员编号为"' + userIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除管理员的数据项？').then(function() {
         return delUser(userIds);
       }).then(() => {
         this.getList();

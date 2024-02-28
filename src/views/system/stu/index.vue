@@ -232,7 +232,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除学生选课编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除学生选课的数据项？').then(function() {
         return delStu(ids);
       }).then(() => {
         this.getList();
